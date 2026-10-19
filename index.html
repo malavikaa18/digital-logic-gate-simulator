@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogicLab | Digital Logic Simulator</title>
+<style>
+:root {
+  --bg: #080d18;
+  --panel: #111a2b;
+  --border: #25344b;
+  --cyan: #46e5ff;
+  --green: #50f5a1;
+  --muted: #91a1ba;
+  --text: #edf5ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #152642, var(--bg) 65%);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  min-height: 100vh;
+}
+header {
+  padding: 24px 6%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.logo { font-size: 23px; font-weight: 800; letter-spacing: 1px; }
+.logo span { color: var(--cyan); }
+.pill {
+  border: 1px solid #27694d;
+  color: var(--green);
+  border-radius: 30px;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+main { max-width: 1100px; margin: auto; padding: 34px 20px; }
+h1 { font-size: clamp(28px, 5vw, 44px); margin: 0 0 10px; }
+h1 span { color: var(--cyan); }
+.subtitle { color: var(--muted); line-height: 1.7; }
+.section-title { font-size: 17px; margin: 0 0 16px; }
+.panel {
+  background: linear-gradient(145deg, #131f33, #0e1625);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  margin-top: 22px;
+  box-shadow: 0 12px 40px #0002;
+}
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 16px;
+}
+.input-card {
+  background: #0a1322;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+.bit {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--cyan);
+  margin: 8px;
+}
+button { font: inherit; cursor: pointer; }
+.toggle {
+  border: 1px solid #34445c;
+  border-radius: 24px;
+  background: #263348;
+  color: white;
+  padding: 9px 22px;
+  min-width: 92px;
+}
+.toggle.on {
+  background: #124b39;
+  border-color: var(--green);
+  color: var(--green);
+}
+.hint { color: var(--muted); font-size: 12px; margin-top: 12px; }
+.gates {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0,1fr));
+  gap: 12px;
+}
+.gate {
+  border: 1px solid var(--border);
+  background: #0a1322;
+  border-radius: 13px;
+  padding: 17px 10px;
+  text-align: center;
+  transition: .2s;
+}
+.gate.active {
+  border-color: var(--green);
+  box-shadow: 0 0 18px #50f5a122;
+}
+.gate-name { font-size: 13px; color: var(--muted); }
+.gate-value {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 10px;
+  color: #65748b;
+}
+.gate.active .gate-value {
+  color: var(--green);
+  text-shadow: 0 0 15px #50f5a155;
+}
+.status { color: var(--muted); font-size: 12px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.action {
+  border: 1px solid #34516a;
+  border-radius: 9px;
+  padding: 10px 14px;
+  background: #17283d;
+  color: var(--text);
+}
+.action.primary { background: #123c4b; border-color: var(--cyan); }
+.action:hover, .toggle:hover { filter: brightness(1.2); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td {
+  padding: 12px 9px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+th { color: var(--cyan); }
+tr.current { background: #174238; }
+.table-wrap { overflow-x: auto; }
+.note { font-size: 12px; line-height: 1.7; color: var(--muted); }
+footer { text-align: center; color: var(--muted); padding: 30px 15px; font-size: 12px; }
+@media(max-width:650px) {
+  header { padding: 18px; }
+  main { padding: 24px 14px; }
+  .panel { padding: 16px; }
+  .gates { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .gate { padding: 14px 6px; }
+  th, td { padding: 10px 7px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">⚡ Logic<span>Lab</span></div>
+  <div class="pill">● INTERACTIVE SIMULATOR</div>
+</header>
+
+<main>
+  <h1>Digital Logic <span>Studio.</span></h1>
+  <div class="subtitle">
+    Explore seven fundamental logic gates. Toggle binary inputs
+    and see how digital circuits respond in real time.
+  </div>
+
+  <section class="panel">
+    <h2 class="section-title">01 / Input Control</h2>
+    <div class="inputs">
+      <div class="input-card">
+        <div class="status">INPUT SIGNAL</div>
+        <h3>Switch A</h3>
+        <div class="bit" id="bitA">0</div>
+        <button class="toggle" id="toggleA" onclick="toggleInput('A')">OFF · 0</button>
+        <div class="hint">Click to toggle input A</div>
+      </div>
+      <div class="input-card">
+        <div class="status">INPUT SIGNAL</div>
+        <h3>Switch B</h3>
+        <div class="bit" id="bitB">0</div>
+        <button class="toggle" id="toggleB" onclick="toggleInput('B')">OFF · 0</button>
+        <div class="hint">Click to toggle input B</div>
+      </div>
+    </div>
+    <div class="hint" id="combination">Current binary input: 00</div>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">02 / Live Gate Outputs</h2>
+    <div class="gates" id="gates"></div>
+    <p class="note">Green glow = HIGH (1). Dim output = LOW (0).
+    NOT uses input A only.</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">03 / Truth Table Explorer</h2>
+    <div class="actions" style="margin-bottom:16px">
+      <button class="action primary" onclick="nextInput()">Next Input →</button>
+      <button class="action" onclick="resetInputs()">Reset Inputs</button>
+      <button class="action" onclick="showTruthTable()">Show All Combinations</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>A</th><th>B</th><th>AND</th><th>OR</th><th>NOT A</th>
+          <th>NAND</th><th>NOR</th><th>XOR</th><th>XNOR</th>
+        </tr></thead>
+        <tbody id="truthBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">04 / Circuit Information</h2>
+    <div id="explanation" class="subtitle"></div>
+    <p class="note">
+      This browser interface demonstrates Boolean logic using JavaScript.
+      The Verilog design and its testbench are simulated separately in Vivado.
+    </p>
+  </section>
+</main>
+
+<footer>LOGICLAB · VERILOG HDL LEARNING PROJECT · BUILT FOR ECE</footer>
+
+<script>
+let A = 0;
+let B = 0;
+
+const names = ["AND", "OR", "NOT A", "NAND", "NOR", "XOR", "XNOR"];
+
+function calculate(a, b) {
+  return [
+    a & b,
+    a | b,
+    1 - a,
+    1 - (a & b),
+    1 - (a | b),
+    a ^ b,
+    1 - (a ^ b)
+  ];
+}
+
+function toggleInput(input) {
+  if (input === "A") A = 1 - A;
+  else B = 1 - B;
+  update();
+}
+
+function update() {
+  document.getElementById("bitA").textContent = A;
+  document.getElementById("bitB").textContent = B;
+
+  for (const [name, value] of [["A", A], ["B", B]]) {
+    const button = document.getElementById("toggle" + name);
+    button.textContent = value ? "ON · 1" : "OFF · 0";
+    button.classList.toggle("on", value === 1);
+  }
+
+  document.getElementById("combination").textContent =
+    `Current binary input: ${A}${B}`;
+
+  const outputs = calculate(A, B);
+
+  document.getElementById("gates").innerHTML =
+    names.map((name, i) => `
+      <div class="gate ${outputs[i] ? "active" : ""}">
+        <div class="gate-name">${name}</div>
+        <div class="gate-value">${outputs[i]}</div>
+        <div class="status">${outputs[i] ? "HIGH" : "LOW"}</div>
+      </div>
+    `).join("");
+
+  document.getElementById("explanation").textContent =
+    `For input A=${A} and B=${B}, the seven outputs are ` +
+    outputs.join(", ") +
+    ". Each output follows its corresponding Boolean logic rule.";
+
+  renderTruthTable();
+}
+
+function renderTruthTable() {
+  let html = "";
+  for (let a = 0; a <= 1; a++) {
+    for (let b = 0; b <= 1; b++) {
+      const values = calculate(a, b);
+      const current = a === A && b === B;
+      html += `<tr class="${current ? "current" : ""}">
+        <td>${a}</td><td>${b}</td>
+        ${values.map(v => `<td>${v}</td>`).join("")}
+      </tr>`;
+    }
+  }
+  document.getElementById("truthBody").innerHTML = html;
+}
+
+function nextInput() {
+  const next = (A * 2 + B + 1) % 4;
+  A = (next >> 1) & 1;
+  B = next & 1;
+  update();
+}
+
+function resetInputs() {
+  A = 0;
+  B = 0;
+  update();
+}
+
+function showTruthTable() {
+  document.querySelector(".table-wrap").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+update();
+</script>
+</body>
+</html>
