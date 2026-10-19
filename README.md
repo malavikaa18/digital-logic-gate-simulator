@@ -105,7 +105,7 @@ The testbench checks seven outputs for each of four input combinations, giving 2
 
 Once published using GitHub Pages, add your website link here.
 
-**Live Demo:** `Add your GitHub Pages URL`
+**Live Demo:** `Click here to launch LogicLab`
 
 ## 👩‍💻 Author
 
