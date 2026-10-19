@@ -103,9 +103,9 @@ The testbench checks seven outputs for each of four input combinations, giving 2
 
 ## 🌐 Live Demo
 
-Once published using GitHub Pages, add your website link here.
+🚀 **[Click here to launch LogicLab](https://malavikaa18.github.io/digital-logic-gate-simulator/)**
 
-**Live Demo:** `Click here to launch LogicLab`
+Explore seven logic gates, toggle binary inputs, and view the truth table interactively.
 
 ## 👩‍💻 Author
 
